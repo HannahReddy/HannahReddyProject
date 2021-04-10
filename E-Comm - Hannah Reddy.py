@@ -1,14 +1,15 @@
-mport numpy as np
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+
+
 
 # Import data as sales using pd.read_csv
 sales = pd.read_csv(r"C:\Users\hreddy\Documents\E_Comm_Sales.csv")
 
 separator = '\n*******************************\n'
-
-print("a")
 
 # print top 5 rows
 print(sales.head(5))
@@ -127,15 +128,35 @@ print(customer_best.sort_values(by='InvoiceNo', ascending=False).head(10))
 
 print(separator)
 
-# Visualation 1: Top 10 countries by number of sales
 
-sales.Country.value_counts().head().plot(kind='bar')
+# Visualation 1: Sales by Country
 
-# Visualation 2: Top 10 countries by amount of sales
+TotalPriceGrouped = sales.groupby(by=['CustomerID','Country'], as_index=False)['TotalPrice'].sum()
 
-gross_sales = sales.groupby(['Country'])['TotalPrice'].agg('sum').reset_index().sort_values(by=['TotalPrice'],ascending=False).head()
-print(gross_sales)
-print(gross_sales.plot(x='Country', y='TotalPrice',kind='bar',))
+total_price_country = TotalPriceGrouped.groupby(by=['Country'], as_index=False)['TotalPrice'].sum().sort_values(by='TotalPrice', ascending=False)
+plt.subplots(figsize=(20,6))
+sns.barplot(total_price_country.Country, total_price_country.TotalPrice,palette="Reds_r")
+plt.grid(True)
+plt.xlabel('Country', fontsize=15)
+plt.ylabel('Total Sales',fontsize=15)
+plt.title('Total Sales customers from each country', fontsize=25, color ='steelblue',fontweight="bold")
+plt.xticks(rotation=90)
+
+# Visualation 2: Sales by Country - log scale
+
+TotalPriceGrouped = sales.groupby(by=['CustomerID','Country'], as_index=False)['TotalPrice'].sum()
+
+total_price_country = TotalPriceGrouped.groupby(by=['Country'], as_index=False)['TotalPrice'].sum().sort_values(by='TotalPrice', ascending=False)
+plt.subplots(figsize=(20,6))
+sns.barplot(total_price_country.Country, total_price_country.TotalPrice,palette="Blues_r")
+plt.grid(True)
+plt.xlabel('Country', fontsize=15)
+plt.ylabel('Total Sales',fontsize=15)
+plt.title('Total Sales customers from each country', fontsize=25, color ='steelblue',fontweight="bold")
+plt.xticks(rotation=90)
+plt.yscale("log")
+
+
 
 # Visualation 3: Orders by month
 
@@ -187,42 +208,8 @@ grouped = sales.groupby("StockCode")['Description'].unique()
 grouped_counts = grouped.apply(lambda x: len(x)).sort_values(ascending=False)
 grouped_counts.head(50).plot.bar(ax=ax)
 
-#Regionwise analysis
-
-reg = sales[sales['TotalPrice']>=0].groupby('Country').agg({'TotalPrice':'sum',
-                                                  'Quantity': 'sum',
-                                                  'CustomerID': 'count'})
-
-fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(10,30))
-g1 = sns.barplot(x=reg['TotalPrice'], y=reg.index, alpha=1, ax=ax[0],palette='Reds', orient='h')
-g2 = sns.barplot(x=reg['Quantity'], y=reg.index, alpha=1, ax=ax[1], palette='Blues',orient='h')
-g3 = sns.barplot(x=reg['CustomerID'], y=reg.index, alpha=1, ax=ax[2], palette='Greens', orient='h')
-ax[2].title.set_text('Customers Count by Country')
-ax[2].set_xlabel("Customers")
-ax[1].title.set_text('Quantity Sold by Country')
-ax[1].set_xlabel("Quantity")
-ax[0].title.set_text('Revenue by Country')
-ax[0].set_xlabel("Revenue")
 
 plt.show()
-
-#product with most cancellations
-fig, ax = plt.subplots(figsize=(7,10))
-neg_qty = sales[sales["Quantity"]<0]
-neg_qty["TotalPrice"] = abs(neg_qty["TotalPrice"])
-x = neg_qty[["ProductName","TotalPrice"]]
-x.groupby("ProductName")["TotalPrice"].sum().sort_values(ascending=True).tail(30).plot.barh(ax=ax)
-
-#who is most likely to return goods
-Item_retured = df[df['Quantity'] < 0].groupby('CustomerID')[['Revenue',
-                                              'Quantity']].agg(['sum']).sort_values(by=[('Quantity', 'sum')], ascending=True).head(10)
-
-sns.barplot(x=Item_retured.index, y=abs(Item_retured[('Quantity','sum')]))
-plt.ylabel('A number of Quantity returned')
-plt.xticks(rotation=90)
-plt.show()
-
-Print("a")
 
 
 
