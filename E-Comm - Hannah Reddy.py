@@ -8,6 +8,8 @@ sales = pd.read_csv(r"C:\Users\hreddy\Documents\E_Comm_Sales.csv")
 
 separator = '\n*******************************\n'
 
+print("a")
+
 # print top 5 rows
 print(sales.head(5))
 
