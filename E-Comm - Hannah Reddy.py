@@ -1,10 +1,7 @@
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import seaborn as sns
-
-
-
 
 # Import data as sales using pd.read_csv
 sales = pd.read_csv(r"C:\Users\hreddy\Documents\E_Comm_Sales.csv")
@@ -129,36 +126,21 @@ print(customer_best.sort_values(by='InvoiceNo', ascending=False).head(10))
 print(separator)
 
 
-# Visualation 1: Sales by Country
-
-TotalPriceGrouped = sales.groupby(by=['CustomerID','Country'], as_index=False)['TotalPrice'].sum()
-
-total_price_country = TotalPriceGrouped.groupby(by=['Country'], as_index=False)['TotalPrice'].sum().sort_values(by='TotalPrice', ascending=False)
-plt.subplots(figsize=(20,6))
-sns.barplot(total_price_country.Country, total_price_country.TotalPrice,palette="Reds_r")
-plt.grid(True)
-plt.xlabel('Country', fontsize=15)
-plt.ylabel('Total Sales',fontsize=15)
-plt.title('Total Sales customers from each country', fontsize=25, color ='steelblue',fontweight="bold")
-plt.xticks(rotation=90)
-
-# Visualation 2: Sales by Country - log scale
+# Visualation 1: Sales by Country - log scale
 
 TotalPriceGrouped = sales.groupby(by=['CustomerID','Country'], as_index=False)['TotalPrice'].sum()
 
 total_price_country = TotalPriceGrouped.groupby(by=['Country'], as_index=False)['TotalPrice'].sum().sort_values(by='TotalPrice', ascending=False)
 plt.subplots(figsize=(20,6))
 sns.barplot(total_price_country.Country, total_price_country.TotalPrice,palette="Blues_r")
-plt.grid(True)
 plt.xlabel('Country', fontsize=15)
 plt.ylabel('Total Sales',fontsize=15)
-plt.title('Total Sales customers from each country', fontsize=25, color ='steelblue',fontweight="bold")
-plt.xticks(rotation=90)
+plt.title('Total Sales from each country', fontsize=15)
+plt.xticks(rotation=60)
 plt.yscale("log")
 
 
-
-# Visualation 3: Orders by month
+# Visualation 2: Orders by month
 
 sales['Month_str'] = sales.InvoiceDate.dt.to_period('M').astype(str)
 order_per_month = sales.groupby(by='Month_str', as_index=False).TotalPrice.sum()
@@ -166,7 +148,7 @@ plt.figure(figsize = (12,5))
 ax = sns.lineplot(x="Month_str", y = "TotalPrice", data=order_per_month)
 ax.set_title('Orders per month');
 
-# Visualisation 4. Find out the most common stockcodes and descriptions using seaborn
+# Visualisation 3. Find out the most common stockcodes and descriptions using seaborn
 
 stockcode_frequency = sales.StockCode.value_counts().sort_values(ascending=False)
 description_frequency = sales.Description.value_counts().sort_values(ascending=False)
@@ -179,7 +161,7 @@ sns.barplot(stockcode_frequency.iloc[0:19].index,
             ax = ax[0], palette="Blues_r")
 ax[0].set_ylabel("Frequency")
 ax[0].set_xlabel("Stockcode")
-ax[0].set_title("20 most common stockcodes");
+ax[0].set_title("Most Common Stockcodes");
 
 # 2nd subplot - most common descriptions
 sns.barplot(description_frequency.iloc[0:19].index,
@@ -188,10 +170,21 @@ sns.barplot(description_frequency.iloc[0:19].index,
 ax[1].set_ylabel("Frequency")
 ax[1].set_xlabel("Description")
 ax[1].tick_params(labelrotation=90)
-ax[1].set_title("20 most common descriptions")
+ax[1].set_title("Most Common Descriptions")
+
+# Visualisation 4. Find out the most common customers using seaborn
+
+customer_frequency = sales.CustomerID.value_counts().sort_values(ascending=False).iloc[0:19]
+plt.figure(figsize=(15,10))
+customer_frequency.index = customer_frequency.index.astype('Int64')
+sns.barplot(customer_frequency.index, customer_frequency.values, order=customer_frequency.index, palette="Blues_r")
+plt.ylabel("Frequency")
+plt.xlabel("CustomerID")
+plt.title("Which customers are most common?");
 
 
-# Visualisation 2: Find out the number of orders made by the customers using Matplotlib
+
+# Visualisation : Find out the number of orders made by the customers using Matplotlib
 
 orders = sales.groupby(by=['CustomerID','Country'], as_index=False)['InvoiceNo'].count()
 
@@ -201,16 +194,13 @@ plt.xlabel('Customers ID')
 plt.ylabel('Number of Orders')
 plt.title('Number of Orders for different Customers')
 
-#most popular stock code
 
-fig, ax = plt.subplots(figsize=(15,4))
-grouped = sales.groupby("StockCode")['Description'].unique()
-grouped_counts = grouped.apply(lambda x: len(x)).sort_values(ascending=False)
-grouped_counts.head(50).plot.bar(ax=ax)
 
+#Price analysis
+
+plt.subplots(figsize =(12,6))
+sns.boxplot(sales.UnitPrice);
 
 plt.show()
-
-
 
 
