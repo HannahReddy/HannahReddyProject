@@ -97,10 +97,10 @@ for key, value in dict(sales.Country.value_counts()[:6]).items():
         print("Less than 2k")
 
 # Discovering what are the most and least popular products based on the quantity
-qty = sales.pivot_table(index=['StockCode', 'Description'], values='Quantity', aggfunc='sum').sort_values(
+quantity = sales.pivot_table(index=['StockCode', 'Description'], values='Quantity', aggfunc='sum').sort_values(
     by='Quantity', ascending=False)
 
-print(qty.head(10))
+print(quantity.head(10))
 
 print(separator)
 
@@ -139,13 +139,12 @@ plt.title('Total Sales from each country', fontsize=15)
 plt.xticks(rotation=60)
 plt.yscale("log")
 
+# Visualisation 2: Orders by month
 
-# Visualation 2: Orders by month
-
-sales['Month_str'] = sales.InvoiceDate.dt.to_period('M').astype(str)
-order_per_month = sales.groupby(by='Month_str', as_index=False).TotalPrice.sum()
+sales['Month'] = sales.InvoiceDate.dt.to_period('M').astype(str)
+order_per_month = sales.groupby(by='Month', as_index=False).TotalPrice.sum()
 plt.figure(figsize = (12,5))
-ax = sns.lineplot(x="Month_str", y = "TotalPrice", data=order_per_month)
+ax = sns.lineplot(x="Month", y = "TotalPrice", data=order_per_month)
 ax.set_title('Orders per month');
 
 # Visualisation 3. Find out the most common stockcodes and descriptions using seaborn
@@ -153,23 +152,23 @@ ax.set_title('Orders per month');
 stockcode_frequency = sales.StockCode.value_counts().sort_values(ascending=False)
 description_frequency = sales.Description.value_counts().sort_values(ascending=False)
 
-fig, ax = plt.subplots(2,1,figsize=(20,15))
+fig, ax = plt.subplots(2,1,figsize=(15,8))
 
 # 1st subplot - most common stockcodes
-sns.barplot(stockcode_frequency.iloc[0:19].index,
-            stockcode_frequency.iloc[0:19].values,
+sns.barplot(stockcode_frequency.iloc[0:10].index,
+            stockcode_frequency.iloc[0:10].values,
             ax = ax[0], palette="Blues_r")
 ax[0].set_ylabel("Frequency")
 ax[0].set_xlabel("Stockcode")
 ax[0].set_title("Most Common Stockcodes");
 
 # 2nd subplot - most common descriptions
-sns.barplot(description_frequency.iloc[0:19].index,
-            description_frequency.iloc[0:19].values,
+sns.barplot(description_frequency.iloc[0:10].index,
+            description_frequency.iloc[0:10].values,
             ax = ax[1], palette="Purples_r")
 ax[1].set_ylabel("Frequency")
-ax[1].set_xlabel("Description")
-ax[1].tick_params(labelrotation=90)
+ax[1].set_xlabel("Description",fontsize=15)
+ax[1].tick_params(labelrotation=60)
 ax[1].set_title("Most Common Descriptions")
 
 # Visualisation 4. Find out the most common customers using seaborn
@@ -183,20 +182,7 @@ plt.xlabel("CustomerID")
 plt.title("Which customers are most common?");
 
 
-
-# Visualisation : Find out the number of orders made by the customers using Matplotlib
-
-orders = sales.groupby(by=['CustomerID','Country'], as_index=False)['InvoiceNo'].count()
-
-plt.subplots(figsize=(10,6))
-plt.plot(orders.CustomerID, orders.InvoiceNo)
-plt.xlabel('Customers ID')
-plt.ylabel('Number of Orders')
-plt.title('Number of Orders for different Customers')
-
-
-
-#Price analysis
+#Visualisaiton 5: Price analysis
 
 plt.subplots(figsize =(12,6))
 sns.boxplot(sales.UnitPrice);
