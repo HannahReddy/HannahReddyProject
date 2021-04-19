@@ -119,7 +119,7 @@ print(separator)
 
 # Find out the 'CustomerID' that placed the most orders
 
-print('The TOP 10 customers with most number of orders')
+print('The top 10 customers with most number of orders')
 customer_best = sales.groupby(by=['CustomerID', 'Country'], as_index=False)['InvoiceNo'].count()
 print(customer_best.sort_values(by='InvoiceNo', ascending=False).head(10))
 
