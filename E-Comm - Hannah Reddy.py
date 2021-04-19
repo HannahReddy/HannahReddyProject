@@ -104,6 +104,14 @@ print(quantity.head(10))
 
 print(separator)
 
+#demonstrate use of numpy array
+
+array = np.array(quantity)
+sort_array= np.sort(array)
+print(sort_array)
+
+print(separator)
+
 # Find top 10 countries in terms of number of transactions using a dictionary
 
 country_dict = dict(sales.Country.value_counts()[:10])
@@ -189,4 +197,4 @@ sns.boxplot(sales.UnitPrice);
 
 plt.show()
 
-
+print(separator)
